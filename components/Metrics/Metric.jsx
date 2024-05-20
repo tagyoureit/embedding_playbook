@@ -11,6 +11,7 @@ import { parseInsights } from "utils";
 import { InsightsModal } from "components";
 
 
+
 export const Metric = (props) => {
   const { metric } = props;
   // distinct count of insights

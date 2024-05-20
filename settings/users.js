@@ -9,6 +9,15 @@ export const users = {
       Superstore: []
     }
   },
+  AB: {
+    id: "rgoldin@salesforce.com",
+    name: "Russ Goldin",
+    email: "rgoldin@salesforce.com",
+    picture: "img/stock/julie_morris.png",
+    uaf: {
+      Superstore: []
+    }
+  },
   B: {
     id: "jchen@mail.com",
     name: "Justin Chen",

@@ -3,6 +3,7 @@ import { SessionProvider } from "next-auth/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { ThemeProvider } from 'next-themes';
+import { SecureDataProvider } from 'components/SecureDataProvider'
 
 import '../global.css';
 import { ChatPopover } from 'components';
@@ -44,9 +45,10 @@ export default function App({
   // Session Provider: https://next-auth.js.org/getting-started/client#sessionprovider
   // Query Client Provider: https://tanstack.com/query/v4/docs/react/reference/QueryClientProvider
   return (
-    <SessionProvider session={session}>
-      <QueryClientProvider client={queryClient}>
-        <ReactQueryDevtools initialIsOpen buttonPosition='bottom-left'/>
+    <SecureDataProvider>
+      <SessionProvider session={session}>
+        <QueryClientProvider client={queryClient}>
+          <ReactQueryDevtools initialIsOpen buttonPosition='bottom-left' />
           <ThemeProvider attribute="class">
             <Component {...pageProps} />
             {showDevtools && (
@@ -56,7 +58,8 @@ export default function App({
             )}
             <ChatPopover />
           </ThemeProvider>
-      </QueryClientProvider>
-    </SessionProvider>
+        </QueryClientProvider>
+      </SessionProvider>
+    </SecureDataProvider>
   )
 }

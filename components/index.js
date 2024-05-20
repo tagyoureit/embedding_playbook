@@ -10,3 +10,6 @@ export { TableauViz } from './TableauViz';
 export { TableauEmbed } from './TableauEmbed';
 export { ThemeSelector, Themes, Superstore, NTO, Ebikes } from './Themes';
 export { RightClick } from './RightClick';
+export { PulseExtension } from 'components/PulseExtension';
+export { PulseExtensionDialog } from 'components/PulseExtension';
+export { TableauExtension } from './TableauExtension';

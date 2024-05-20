@@ -1,6 +1,6 @@
 import { useSession, signIn } from "next-auth/react";
 import { useQuery } from "@tanstack/react-query";
-import { getEmbed } from "libs";
+import { getEmbed, tabSignOut } from "libs";
 // implements custom hooks with tanstack query for asynchronous state management
 // concepts described here: https://tkdodo.eu/blog/react-query-as-a-state-manager
 // more on query key structure: https://tkdodo.eu/blog/effective-react-query-keys#structure
@@ -8,7 +8,7 @@ import { getEmbed } from "libs";
 // more on retries (default 3): https://tanstack.com/query/v5/docs/framework/react/guides/query-retries
 // secures UI components via these methods: https://next-auth.js.org/getting-started/client#require-session
 
-export const useTableauSession = (userName) => {
+export const useTableauSession = (userName, secureData) => {
   // set to an empty array if enumerated function parameters are not available in array
   const queryKey = [userName].every(param => param != null) ? ["tableau", "embed", userName] : [];
 
@@ -16,12 +16,28 @@ export const useTableauSession = (userName) => {
     required: true, // only 2 states: loading and authenticated https://next-auth.js.org/getting-started/client#require-session
     async onUnauthenticated() {
       // The user is not authenticated, handle it here.
-      const { error, status, ok } = await signIn('demo-user', { redirect: false, ID: userName });
+      const { error, status, ok } = await signIn('demo-user', { redirect: false, ID: userName, ...secureData });
     }
   });
 
   // controls dependent query
   const signedIn = session_status === 'authenticated';
+
+  // Check if the current session username matches the provided username
+  const usernameMismatch = session_data?.userName && session_data.userName !== userName
+    || session_data?.tableauUrl !== secureData?.tableauUrl
+    || session_data?.siteName !== secureData?.siteName
+    || session_data?.caClientId !== secureData?.caClientId
+    || session_data?.caSecretId !== secureData?.caSecretId
+    || session_data?.caSecretValue !== secureData?.caSecretValue;
+
+  // If there's a mismatch, force re-authentication
+  if (usernameMismatch) {
+    (async ()=>{
+      await tabSignOut(session_data.tableauUrl);  
+      await signIn('demo-user', { redirect: false, ID: userName, ...secureData });
+    });
+  }
 
   // tanstack query hook
   return useQuery({

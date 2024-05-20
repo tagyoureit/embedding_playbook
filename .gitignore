@@ -138,3 +138,8 @@ components.json
 
 # ignore temporarily
 config/assets
+.env.development
+.env.development.blank
+.env.development.default
+.env.development.rsg
+.env.development.sprice
