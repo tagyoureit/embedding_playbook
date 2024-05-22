@@ -31,6 +31,12 @@ export class MetricsModel {
     return this.metrics;
   }
 
+  clearMetrics(){
+    this.subscriptions = null;
+    this.specifications = null;
+    this.definitions = null;
+  }
+
   makeMetrics = () => {
     for (const [key, definition] of Object.entries(this.definitions)) {
       const Metric = new InsightsModel(this.user_id, definition, this.specifications, this.subscriptions);

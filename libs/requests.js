@@ -9,6 +9,7 @@ const api = process.env.TABLEAU_API; // Tableau API version (classic resources)
 
 // authenticate to Tableau with JSON Web Tokens
 export const tabAuthJWT = async (jwt, tableauUrl, siteName) => {
+
   let _domain = tableau_domain;
   if (typeof tableauUrl !== 'undefined') _domain = tableauUrl;
   const endpoint = `${_domain}/api/${api}/auth/signin`;
@@ -43,7 +44,7 @@ export const tabAuthJWT = async (jwt, tableauUrl, siteName) => {
           contentUrl: contentUrl,
         }
       }
-    };
+    }; 
   
     const config = {
       tableau_domain,
@@ -55,6 +56,22 @@ export const tabAuthJWT = async (jwt, tableauUrl, siteName) => {
   
     const response = await httpPost(endpoint, body, config);
     */
+    if (!response.credentials) {
+      console.log(`RESPONSE NOT OK!`);
+      console.log(response);
+      if (response?.response.status === 401) {
+        throw new Error('Unauthorized: Invalid JWT token.');
+      } else if (response?.response?.status === 404) {
+        throw new Error('Not Found: The specified endpoint does not exist.');
+      } else if (response?.response?.status >= 400 && response.response.status < 500) {
+        throw new Error(`Client Error: ${response.response.statusText}`);
+      } else if (response?.response?.status >= 500) {
+        throw new Error(`Server Error: ${response.response.statusText}`);
+      }
+      else {
+        throw new Error(`Something went wrong: ${JSON.stringify(response)}`);
+      }
+    }
   const site_id = response.credentials.site.id;
   const site = response.credentials.site.contentUrl;
   const user_id = response.credentials.user.id;

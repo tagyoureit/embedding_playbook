@@ -143,3 +143,4 @@ config/assets
 .env.development.default
 .env.development.rsg
 .env.development.sprice
+.env.development.rsg-10ax

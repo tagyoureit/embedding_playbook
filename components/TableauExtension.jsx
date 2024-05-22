@@ -3,7 +3,8 @@ import { tab_extension } from 'libs';
 import { forwardRef, useContext, useState, useEffect } from 'react';
 import { Metrics } from 'components';
 import { useTableauSession } from 'hooks';
-
+import { useSession, signIn, signOut } from "next-auth/react";
+import { getEmbed, tabSignOut } from "libs";
 import { SecureDataContext } from 'components/SecureDataProvider';
 
 // forwardRef HOC receives ref from parent and sets placeholder
@@ -67,15 +68,31 @@ const AuthLayer = forwardRef(function AuthLayer(props, ref) {
 
   useEffect(() => {
     console.log(`NEW SESSION DATA!`)
-    console.debug(`NEW SESSION DATA2!`)
     // console.debug(JSON.stringify(secureData));
+    // Check if the current session username matches the provided username
+    const usernameMismatch = userNameCtx && userNameCtx !== secureData.userName
+      || tableauUrl !== secureData?.tableauUrl
+      || siteName !== secureData?.siteName
+      || caClientId !== secureData?.caClientId
+      || caSecretId !== secureData?.caSecretId
+      || caSecretValue !== secureData?.caSecretValue;
+    console.log(`Username mismatch?? ${usernameMismatch ? 'true' : 'false'}`);
+    // If there's a mismatch, force re-authentication
+    if (usernameMismatch) {
+      (async () => {
+        console.log(`signing user out because secureData is mismatched`);
+        await signOut({ redirect: false });
+        await tabSignOut(tableauUrl);
+        await signIn('demo-user', { redirect: false, ID: userNameCtx, ...secureData });
+      })();
+    }
     setUserNameCtx(secureData.userName);
     setSiteName(secureData.siteName);
     setTableauUrl(secureData.tableauUrl);
     setCaClientId(secureData.caClientId);
     setCaSecretId(secureData.caSecretId);
     setCaSecretValue(secureData.caSecretValue);
-  }, [secureData.siteName, secureData.isReady, secureData.userName, secureData.tableauUrl, secureData.caClientId, secureData.caSecretId, secureData.caSecretValue]);
+  }, [secureData.siteName, secureData.isReady, secureData.userName, secureData.tableauUrl, secureData.caClientId, secureData.caSecretId, secureData.caSecretValue, secureData, userNameCtx, siteName, tableauUrl, caClientId, caSecretId, caSecretValue]);
 
 
   // tanstack query hook to manage embed sessions

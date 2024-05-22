@@ -21,7 +21,8 @@ export const httpGet = async (endpoint, config) => {
       throw new Error(`ERROR: Cannot GET for endpoint: ${endpoint}`);
     }
   } catch (error) {
-    return formatError(error);
+    return error;
+    // return formatError(error);
   }
 };
 
@@ -47,14 +48,20 @@ export const httpPost = async (endpoint, body, config) => {
       throw new Error(`ERROR: Cannot POST for endpoint: ${endpoint}`);
     }
   } catch (error) {
-    return formatError(error);
+    return error;
+    // return formatError(error);
   }
 };
 
 const formatError = (error) => {
-  const errMessage = new Error(
-    `HTTP - ${error.config.method} ${error.response.status} ${error.code}: ${error.response.data.message}`
-  );
-  console.debug(errMessage);
-  return errMessage;
+  if (error.config.message && error.response.status && error.code && error.response.data.message){
+    const errMessage = new Error(
+      `HTTP - ${error.config.method} ${error.response.status} ${error.code}: ${error.response.data.message}`
+    );
+    console.debug(errMessage);
+    return errMessage;
+  }
+  else {
+    return new Error(`HTTP - Unknown Error ${JSON.stringify(error)}`);
+  }
 }
