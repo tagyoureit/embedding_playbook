@@ -6,13 +6,14 @@ export const dynamic = 'force-dynamic'; // static by default, unless reading the
 
 // local connected app
 export async function POST(req) {
+  console.log(`POST request in embed route.js: ${JSON.stringify(req)}`);
   // Check if req is defined
   if (!req) {
     return NextResponse.json({ error: '400: Bad Request' }, { status: 400 });
   }
   // session token specific to each user
   const token = await getToken({ req });
-
+  console.log(`Token in embed route.js: ${JSON.stringify(token)}`);
   // Check if token is defined
   if (token?.tableau) {
     const payload = token.tableau.embed_token;
