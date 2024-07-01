@@ -292,9 +292,9 @@ const NavigationTabs = ({ activeTab, setActiveTab, ...props }) => {
       </div>
 
       <div className="content">
-        {activeTab === 'connection' && <ConnectionTab {...props} />}
-        {activeTab === 'metrics' && <MetricsTab {...props} />}
-        {activeTab === 'options' && <OptionsTab {...props} />}
+        {activeTab === 'connection' && <ConnectionTab {...(props as any)} />}
+        {activeTab === 'metrics' && <MetricsTab {...(props as any)} />}
+        {activeTab === 'options' && <OptionsTab {...(props as any)} />}
       </div>
 
       <style jsx>{`
