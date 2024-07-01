@@ -3,7 +3,7 @@
   <dashboard-extension id="com.tableau.extensions.samples.pulseDashboardExtension" extension-version="0.7.0">
     <default-locale>en_US</default-locale>
     <name resource-id="name"/>
-    <description>Pulse Dashboard Extension COPY Description</description>
+    <description>Pulse Dashboard Extension</description>
     <author name="tableau" email="github@tableau.com" organization="tableau" website="https://www.tableau.com"/>
     <min-api-version>1.10</min-api-version>
     <source-location>
@@ -16,7 +16,7 @@
   </dashboard-extension>
   <resources>
     <resource id="name">
-      <text locale="en_US">Pulse Dashboard Extension COPY</text>
+      <text locale="en_US">Pulse Dashboard Extension</text>
     </resource>
   </resources>
 </manifest>
