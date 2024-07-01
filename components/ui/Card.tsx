@@ -1,5 +1,6 @@
 import * as React from "react";
 import { cn } from "../../utils";
+import { CardProps } from "reactstrap";
 
 
 const Card = React.forwardRef<HTMLDivElement, CardProps>(
