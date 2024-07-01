@@ -6,7 +6,7 @@ import {
   trimStartOfStreamHelper,
   type AIStreamCallbacksAndOptions,
 } from "ai";
-import { Response } from "llamaindex";
+// import { Response } from "llamaindex";
 
 type ParserOptions = {
   image_url?: string;
@@ -42,11 +42,12 @@ function createParser(
         data.close();
         return;
       }
-
-      const text = trimStartOfStream(value.response ?? "");
+      
+      // TODO: Fix this
+/*       const text = trimStartOfStream(value.response ?? "");
       if (text) {
         controller.enqueue(text);
-      }
+      } */
     },
   });
 }
@@ -62,7 +63,7 @@ export function LlamaIndexStream(
   return {
     stream: createParser(res, data, opts?.parserOptions)
       .pipeThrough(createCallbacksTransformer(opts?.callbacks))
-      .pipeThrough(createStreamDataTransformer(true)),
+      .pipeThrough(createStreamDataTransformer()),
     data,
   };
 }

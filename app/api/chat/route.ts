@@ -71,9 +71,10 @@ export async function POST(req: NextRequest) {
         "contextGenerator:contextSystemPrompt": newContextSystemPrompt,
       });
 
+      // TODO: Fix this
       // Convert message content from Vercel/AI format to LlamaIndex/OpenAI format
-      const userMessageContent = convertMessageContent(
-        userMessage.content,
+/*       const userMessageContent = convertMessageContent(
+        userMessage.content
         data?.imageUrl,
       );
 
@@ -92,7 +93,8 @@ export async function POST(req: NextRequest) {
       });
 
       // Return a StreamingTextResponse, which can be consumed by the Vercel/AI client
-      return new StreamingTextResponse(stream, {}, streamData);
+      return new StreamingTextResponse(stream, {}, streamData); */
+      return NextResponse.json({ error: '40x: Fix the code!' }, { status: 401 });
     } else {
       // unauthorized on account of lack of session token (prevents scripted attacks)
       return NextResponse.json({ error: '401: Unauthorized Session Token' }, { status: 401 });
