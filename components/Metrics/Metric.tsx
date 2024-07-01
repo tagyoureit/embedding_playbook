@@ -1,84 +1,79 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from 'react';
 import { IconSparkles } from '@tabler/icons-react';
+import { Card, CardContent, CardHeader, CardTitle } from '../ui';
+import { Skeleton } from '../ui';
+import { Badge } from '../ui';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '../ui';
+import { useInsights } from '../../hooks';
+import { parseInsights } from '../../utils';
+import { InsightsModal } from '..';
+import { ExtensionDataContext } from '../ExtensionDataProvider';
 
-import { Card, CardContent, CardHeader, CardTitle } from "components/ui";
-import { Skeleton } from "components/ui";
-import { Badge } from "components/ui";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "components/ui";
+interface MetricProps {
+  metric: {
+    name: string;
+    id: string;
+  };
+}
 
-import { useInsights } from "hooks";
-import { parseInsights } from "utils";
-import { InsightsModal } from "components";
+interface StatsProps {
+  isSuccess: boolean;
+  stats: {
+    value?: string;
+    absolute?: string;
+    relative?: string;
+    direction?: string;
+    color?: string;
+    badge?: string;
+  };
+  bundleCount: number | null;
+  metric: {
+    name: string;
+    id: string;
+  };
+}
 
-
-
-export const Metric = (props) => {
+export const Metric: React.FC<MetricProps> = (props) => {
   const { metric } = props;
-  // distinct count of insights
-  const [bundleCount, setBundleCount] = useState(null);
-  let result; // contains question, markup and facts
-  let facts; // contains values, absolute and relative changes
-  let stats = { sentiment: undefined }; // prop storing key facts
-  // tanstack query hook
+  const [bundleCount, setBundleCount] = useState<number | null>(null);
+  let result;
+  let facts;
+  let stats: any = { sentiment: undefined };
   const { data, error, isError, isSuccess, failureCount, failureReason } = useInsights(metric);
-
   useEffect(() => {
     if (isSuccess) {
-      // main data found in insight groups
       const details = parseInsights(data);
       setBundleCount(details.length);
     }
   }, [isSuccess, data]);
-
   if (isError) {
     console.debug(error);
   }
-
-  // console.log(`failureCount ${metric.name}`, failureCount);
-  // console.log(`failureReason ${metric.name}`, failureReason);
-
-
   if (isSuccess) {
     const insight_groups = data?.bundle_response?.result.insight_groups;
     if (Array.isArray(insight_groups)) {
       insight_groups.forEach((insight) => {
-        // uses the ban insight to generate stats
         if (insight.type === 'ban') {
-          // BAN responses only have 1 insight_groups and 1 insights
           result = data?.bundle_response?.result.insight_groups[0].insights[0].result;
           facts = result?.facts;
-          // formatted current value
           stats.value = facts?.target_period_value.formatted;
-          // absolute difference in unit of measurement
           stats.absolute = facts?.difference.absolute.formatted;
-          // always a percentage
           stats.relative = facts?.difference.relative.formatted;
-          // show a plus sign for increments
           if (stats.absolute) {
             if (!stats?.absolute.startsWith('-')) {
               stats.absolute = '+' + stats.absolute;
               stats.relative = '+' + stats.relative;
             }
           }
-          // direction of the arrow icon -- old numerical version SPrice
-          //const dir = facts?.difference.direction;
-          // if (dir === 'up') {
-          //   stats.direction = '↗︎';
-          //   stats.color = 'text-sky-600';
-          //   stats.badge = 'bg-sky-600 dark:bg-sky-600';
-          // } else if (dir === 'down') {
-          //   stats.direction = '↘︎';
-          //   stats.color = 'text-orange-600';
-          //   stats.badge = 'bg-orange-600 dark:bg-orange-600';
-          // } else if (dir === 'flat') {
-          //   stats.direction = '→';
-          //   stats.color = 'text-stone-500 dark:text-stone-400';
-          //   stats.badge = 'bg-stone-500 dark:bg-stone-400';
-          // }
-
-          // direction of the arrow icon -- new Logical/sentimental version dschober
           const dir = facts?.difference.direction;
-          const sent= facts?.sentiment;
+          const sent = facts?.sentiment;
           if (dir === 'up') {
             stats.direction = '↗︎';
             if (sent === 'positive') {
@@ -120,9 +115,8 @@ export const Metric = (props) => {
       });
     }
   }
-
-  // fully loaded state
   return (
+    // tslint: disable-next-line
     <Card className="min-h-[111px] max-w-[240px] dark:bg-stone-900">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 p-3 pb-0">
         <CardTitle className="text-stone-500 dark:text-stone-300 leading-5 font-bold pl-3 whitespace-nowrap overflow-hidden">
@@ -130,20 +124,15 @@ export const Metric = (props) => {
         </CardTitle>
       </CardHeader>
       <CardContent className="p-3 pt-0">
-        <Stats
-          isSuccess={isSuccess}
-          stats={stats}
-          bundleCount={bundleCount}
-          metric={metric}
-        />
+        <Stats isSuccess={isSuccess} stats={stats} bundleCount={bundleCount} metric={metric} />
       </CardContent>
     </Card>
-  )
-}
+  );
+};
 
-const Stats = (props) => {
+const Stats: React.FC<StatsProps> = (props) => {
   const { isSuccess, stats, bundleCount, metric } = props;
-
+  const { contextData, updateContextData } = useContext(ExtensionDataContext);
   if (isSuccess) {
     return (
       <div className="grid grid-rows-2">
@@ -157,9 +146,7 @@ const Stats = (props) => {
             </div>
           </div>
           <div className="col-span-5">
-            <p className={`text-xs text-muted-foreground ${stats.color}`}>
-              {stats.absolute}
-            </p>
+            <p className={`text-xs text-muted-foreground ${stats.color}`}>{stats.absolute}</p>
             <p className={`text-xs text-muted-foreground ${stats.color}`}>
               {stats.relative ? `${stats.relative}` : null} △
             </p>
@@ -167,19 +154,26 @@ const Stats = (props) => {
         </div>
         <div className="flex flex-row">
           <Dialog>
-            <DialogTrigger>
-              <Badge className={`${stats.badge} text-stone-50 max-h-6 my-auto ml-6`}>
-                <IconSparkles width={15} height={15} className="mr-1"/>
+            <DialogTrigger
+              onClick={() => {
+                console.log(`calling handleSetVal with ${metric.id}`);
+                // handleSetVal(metric.id);
+                contextData.companionMode === 'source' ? contextData.handleSetVal(metric.id) : null;
+              }}
+            >
+              <Badge className={`${stats.badge} text-stone-50 max-h-6 my-auto ml-6`} variant='undefined'>
+                <IconSparkles width={15} height={15} className="mr-1" />
                 Insights: {bundleCount}
               </Badge>
             </DialogTrigger>
-            <InsightsModal metric={metric} stats={stats} />
+            {contextData.companionMode === 'none' || contextData.companionMode === 'target' ? (
+              <InsightsModal metric={metric} stats={stats} />
+            ) : null}
           </Dialog>
         </div>
       </div>
-    )
+    );
   }
-
   return (
     <>
       <div className="space-y-2">
@@ -187,6 +181,5 @@ const Stats = (props) => {
         <Skeleton className="h-4 w-1/2" />
       </div>
     </>
-  )
-}
-
+  );
+};

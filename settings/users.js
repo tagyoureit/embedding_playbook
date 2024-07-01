@@ -10,9 +10,9 @@ export const users = {
     }
   },
   AB: {
-    id: "rgoldin@salesforce.com",
+    id: "__rgoldin@salesforce.com",
     name: "Russ Goldin",
-    email: "rgoldin@salesforce.com",
+    email: "__rgoldin@salesforce.com",
     picture: "img/stock/julie_morris.png",
     uaf: {
       Superstore: []

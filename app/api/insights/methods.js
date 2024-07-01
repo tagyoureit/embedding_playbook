@@ -1,4 +1,5 @@
-// TODO - Param me
+
+const axios = require('axios');
 const tableau_domain = process.env.NEXT_PUBLIC_ANALYTICS_DOMAIN; // URL for Tableau environment
 // const tableau_domain = 'https://10az.online.tableau.com'; // URL for Tableau environment
 const pulse_path = '/api/-/pulse'; // path to resource
@@ -39,23 +40,34 @@ const getInsightBundle = async (apiKey, metric, resource, tableauUrl) => {
       'X-Tableau-Auth': apiKey,
       'Accept': 'application/json',
       'Content-Type': 'application/json',
+      'redirect': 'follow'
     },
     body: JSON.stringify(body),
   });
-
-  const res = await fetch(request);
-
-  isServerlessTimeout(res);
-
-  const contentType = res.headers.get('content-type');
-
-  if (contentType === 'text/html') {
-    const txt = await res.text();
-    throw new Error(txt);
-  } else if (contentType === 'application/json') {
-    const jsonData = await res.json();
-    return jsonData;
+  
+  // const res = await fetch(request);
+  // isServerlessTimeout(res);
+  try {
+    const response = await axios.post(endpoint, body, {
+      headers: {
+        'X-Tableau-Auth': apiKey,
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      }
+    });
+  
+    const contentType = response.headers['content-type'];
+  
+    if (contentType === 'text/html') {
+      throw new Error(response.data);
+    } else if (contentType === 'application/json') {
+      const jsonData = response.data;
+      return jsonData;
+    }
+  } catch (error) {
+    console.error('Axios error:', error);
   }
+
 }
 
 // generetes the complex request body required to generate an insights bundle

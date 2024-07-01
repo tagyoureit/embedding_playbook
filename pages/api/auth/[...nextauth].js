@@ -23,16 +23,18 @@ export const authOptions = {
         siteName: { label: "Site Name", type: "text" },
         caClientId: { label: "Client ID", type: "text" },
         caSecretId: { label: "Secret ID", type: "text" },
-        caSecretValue: { label: "Secret Value", type: "text" },
-        isReady: { label: "Is Ready", type: "boolean" }
+        caSecretValue: { label: "Secret Value", type: "text" }
       },
       async authorize(credentials, req) {
         console.log(`...nextAuth passed credentials: ${JSON.stringify(credentials)}`);
 
         let user = null;
+        if (!credentials.userName) throw new Error('Invalid credentials: Missing userName');
 
-        if (credentials.isReady) {
-          // When isReady is passed, use the provided details
+        // let isDashboardExtension = credentials.userName !== null && credentials.tableauUrl !== null && credentials.siteName !== null && credentials.caClientId !== null && credentials.caSecretId !== null && credentials.caSecretValue !== null;
+        if (credentials.userName === 'undefined') return false;
+        if (credentials.isDashboardExtension === 'true') {
+          // When isDashboardExtension is passed, use the provided details
           const rest_session = await initializeSession(credentials, 'rest');
 
           if (rest_session.authorized) {
@@ -44,18 +46,13 @@ export const authOptions = {
                 tableauUrl: credentials.tableauUrl,
                 username: credentials.userName,
                 site: credentials.siteName,
-                // caClientId: credentials.caClientId,
-                // caSecretId: credentials.caSecretId,
-                // caSecretValue: credentials.caSecretValue,
-                isReady: credentials.isReady,
-
               }
             };
             console.log(`user...`)
             console.log(JSON.stringify(user));
           }
         } else {
-          // When isReady is not passed, use stored user data and environment variables
+          // When isDashboardExtension is not passed, use stored user data and environment variables
           for (const [key, value] of Object.entries(settings.demo_users)) {
             if (key.toUpperCase() === credentials.ID.toUpperCase()) {
               user = value;
@@ -81,7 +78,9 @@ export const authOptions = {
             }
           }
         }
-
+        if (!user) {
+          throw new Error('Invalid credentials');
+        }
         return user || false;
       }
     }),
@@ -91,16 +90,10 @@ export const authOptions = {
     }),
   ],
   callbacks: {
-    async jwt({ token, user }) {
-      if (user) {
+    async jwt({ token, user, profile }) {
+      if (user) { // user will only exist on the first call, not subsequent calls
         token.tableau = user.tableau;
         token.tableauUrl = user.tableau.tableauUrl;
-        // token.userName = user.userName;
-        // token.siteName = user.siteName;
-        // token.caClientId = user.caClientId;
-        // token.caSecretId = user.caSecretId;
-        // token.caSecretValue = user.caSecretValue;
-        // token.isReady = user.isReady;
       }
       return token;
     },
@@ -108,13 +101,7 @@ export const authOptions = {
       session.tableau = token.tableau;
       session.tableau.tableauUrl = token.tableauUrl;
       if (!session.tableau.rest_id) session.tableau.rest_id = session.tableau.user_id; // TODO - this ties in to rest_id being missing in api/metrics/methods.js
-      // session.userName = token.userName;
       session.tableau.siteName = token.siteName; // duplicated as site
-      // session.caClientId = token.caClientId;
-      // session.caSecretId = token.caSecretId;
-      // session.caSecretValue = token.caSecretValue;
-      // session.isReady = token.isReady;
-      session.myVarrrr = 'def';
       return session;
     }
   },
@@ -122,9 +109,9 @@ export const authOptions = {
 };
 
 async function initializeSession(user, type = 'rest', method = 'new') {
-  const clientId = user.isReady === 'true' ? user.caClientId : process.env.TABLEAU_JWT_CLIENT_ID;
-  const secret = user.isReady === 'true' ? user.caSecretValue : type === 'rest' ? process.env.TABLEAU_REST_JWT_SECRET : process.env.TABLEAU_EMBED_JWT_SECRET;
-  const secretId = user.isReady === 'true' ? user.caSecretId : type === 'rest' ? process.env.TABLEAU_REST_JWT_SECRET_ID : process.env.TABLEAU_EMBED_JWT_SECRET_ID;
+  const clientId = user.isDashboardExtension === 'true' ? user.caClientId : process.env.TABLEAU_JWT_CLIENT_ID;
+  const secret = user.isDashboardExtension === 'true' ? user.caSecretValue : type === 'rest' ? process.env.TABLEAU_REST_JWT_SECRET : process.env.TABLEAU_EMBED_JWT_SECRET;
+  const secretId = user.isDashboardExtension === 'true' ? user.caSecretId : type === 'rest' ? process.env.TABLEAU_REST_JWT_SECRET_ID : process.env.TABLEAU_EMBED_JWT_SECRET_ID;
   const scopes = type === 'rest' ? [
     "tableau:datasources:read",
     "tableau:workbooks:read",
@@ -151,7 +138,7 @@ async function initializeSession(user, type = 'rest', method = 'new') {
   }
   else {
     type === 'rest' ?
-    await session.restjwt(options, scopes)
+     await session.restjwt(options, scopes)
     :
     await session.embedjwt(options, scopes);
   }

@@ -59,6 +59,7 @@ export const tabAuthJWT = async (jwt, tableauUrl, siteName) => {
     if (!response.credentials) {
       console.log(`RESPONSE NOT OK!`);
       console.log(response);
+      console.log(JSON.stringify(response.response.data.error,null,2));
       if (response?.response.status === 401) {
         throw new Error('Unauthorized: Invalid JWT token.');
       } else if (response?.response?.status === 404) {
@@ -111,7 +112,7 @@ export const tabAuthPAT = async (pat_name, pat_secret) => {
   return { site_id, site, user_id, rest_key, expiration };
 }
 
-export const tabSignOut = async (tableaUrl) => {
+export const tabSignOut = async (tableauUrl) => {
   let _domain = tableau_domain;
   if (typeof tableauUrl !== 'undefined') _domain = tableauUrl;
   const endpoint = _domain + '/auth/signout';

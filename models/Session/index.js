@@ -14,7 +14,6 @@ export class Session {
     this.created = null; // Get the current time in seconds since the epoch
     this.expires = null; // estimated future expiry date
     this.tableauUrl = user.tableauUrl;
-    this.static = 'do not change';
   }
 
   // securely return session data
@@ -28,8 +27,7 @@ export class Session {
        site: this.site, 
        created: this.created, 
        expires: this.expires,
-       tableauUrl: this.tableauUrl,
-       something: 'else'
+       tableauUrl: this.tableauUrl
      };
    } else {
     return null;
