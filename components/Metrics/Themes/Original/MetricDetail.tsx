@@ -208,7 +208,7 @@ const Stats: React.FC<StatsProps> = (props) => {
                       if (contextData.companionMode === 'source') {
                         contextData.handleSetVal(metricId);
                       } else if (contextData.companionMode === 'popup') {
-                        const popupUrl = `/pulseExtension/pulseExtensionInsightsPopup?metricId=${metricId}`;
+                        const popupUrl = `/pulseExtensionInsightsPopup?metricId=${metricId}`;
 
                         if (!popupWindowRef || popupWindowRef.closed) {
                           popupWindowRef = window.open(

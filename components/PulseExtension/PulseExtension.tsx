@@ -12,7 +12,7 @@ import _, { update } from 'lodash';
 import { Insights, InsightsOnly, Metrics } from 'components';
 
 export const PulseExtension = forwardRef(function Extension(props, ref) {
-  const basePath = process.env.NEXT_PUBLIC_BASE_URL;
+  // const basePath = process.env.NEXT_PUBLIC_BASE_URL;
   const { status: session_status, data: session_data } = useSession();
   const configureOpenRef = useRef(false);
   const { contextData, updateContextData } = useContext(ExtensionDataContext);
@@ -150,7 +150,7 @@ export const PulseExtension = forwardRef(function Extension(props, ref) {
     }
     console.log(`INITIALIZING CONFIGURE...`);
     configureOpenRef.current = true;
-    const popupUrl = `${basePath}/pulseExtensionDialog`;
+    const popupUrl = `/pulseExtensionDialog`;
     let passedSettings = {
       loginData: contextDataRef.current.loginData,
       metricCollection: {

@@ -11,7 +11,7 @@
       "timestamp": false
     }
   },
-  "index_orig": {
+  "index": {
     "title": "Embed Tableau",
     "type": "page",
     "display": "hidden",
@@ -31,7 +31,7 @@
     "title": "Demos",
     "type": "page"
   },
- "index": {
+ "pulseExtension": {
     "title": "Pulse Dashboard Extension",
     "type": "page",
     "display": "hidden",

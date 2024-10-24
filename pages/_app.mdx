@@ -47,7 +47,7 @@ export default function App({
   // Query Client Provider: https://tanstack.com/query/v4/docs/react/reference/QueryClientProvider
   return (
     <div id="outerouter" className="nx-mx-auto nx-flex w-full !max-w-none">
-      <SessionProvider session={session} basePath='/pulseExtension/api/auth'>
+      <SessionProvider session={session} >
         {process.env.NODE_ENV === 'production' && <button className="text-gray-300" onClick={() => window.toggleDevtools()} style={{ position: 'fixed', bottom: 5, right: 10, zIndex: 1000 }}>
           Toggle Devtools
         </button>}

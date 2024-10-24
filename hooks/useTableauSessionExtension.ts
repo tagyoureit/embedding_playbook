@@ -14,10 +14,6 @@ import { useState, useEffect, useContext } from 'react';
 export const useTableauSessionExtension = (userName: string, loginData) => {
   // const queryClient = useQueryClient();
   // const { publicRuntimeConfig } = getConfig();
-  // const { basePath } = publicRuntimeConfig;
-  const basePath = process.env.NEXT_PUBLIC_BASE_URL;
-  const basePathUrl = `/pulseExtension/api/auth`;
-  // const basePathUrl = `${basePath}/api/auth`;
   // set to an empty array if enumerated function parameters are not available in array
   const queryKey = [userName].every((param) => param != null)
 
@@ -31,7 +27,7 @@ export const useTableauSessionExtension = (userName: string, loginData) => {
       const res = await signIn("demo-user", {
         redirect: false,
         ID: userName,
-        basePath: '/pulseExtension/api/auth',
+        // basePath: '/pulseExtension/api/auth',
         ...loginData,
       });
       console.log(`sign in response in onUnauthenticated: ${JSON.stringify(res, null, 2)}`);
