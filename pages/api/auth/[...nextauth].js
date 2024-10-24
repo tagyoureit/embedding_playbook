@@ -6,7 +6,7 @@ import { Session } from "models";
 import { UserStore } from "settings";
 
 let cookies = null;
-if (process.env.NODE_ENV === 'production') {
+// if (process.env.NODE_ENV === 'production') {
   cookies = {
     sessionToken: {
       name: `__Secure-next-auth.session-token`,
@@ -38,7 +38,7 @@ if (process.env.NODE_ENV === 'production') {
       }
     },
   }
-}
+// }
 
 export const authOptions = {
   cookies,
