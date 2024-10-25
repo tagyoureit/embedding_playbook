@@ -75,6 +75,15 @@ module.exports = withNextra({
           },
         ],
       },
+      {
+        source: '/pulseExtension(.*)', // Applies to all routes under /pulseExtension
+        headers: [
+          {
+            key: 'X-Frame-Options',
+            value: '', // Removes X-Frame-Options for this route
+          },
+        ],
+      },
     ];
   },
   webpack(config) {
