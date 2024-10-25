@@ -67,7 +67,7 @@ module.exports = withNextra({
   async headers() {
     return [
       {
-        source: '/(.*)', // Applies to all routes
+        source: '/:path*', // Applies to all routes
         headers: [
           {
             key: 'X-Frame-Options',
