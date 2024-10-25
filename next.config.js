@@ -64,6 +64,19 @@ module.exports = withNextra({
   assetPrefix: assetPrefix,
   // basePath: '/pulseExtension', // Sets the base path for all routes
   // assetPrefix: '/pulseExtension', // Prefixes all static assets
+  async headers() {
+    return [
+      {
+        source: '/(.*)', // Applies to all routes
+        headers: [
+          {
+            key: 'X-Frame-Options',
+            value: 'SAMEORIGIN', // or 'SAMEORIGIN' as per your needs
+          },
+        ],
+      },
+    ];
+  },
   webpack(config) {
     // uses svgr for safe usage of SVGs in React
     config.module.rules.push({
