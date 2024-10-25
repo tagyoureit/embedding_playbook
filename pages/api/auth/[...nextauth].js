@@ -15,7 +15,7 @@ let cookies = null;
         sameSite: 'none',
         path: '/',
         secure: true,
-        domain: '.embedding-playbook-navy.vercel.app',
+        domain: '.embedding-playbook-git-runfromroot-russ-goldins-projects.vercel.app',
       }
     },
     callbackUrl: {
@@ -24,7 +24,7 @@ let cookies = null;
         sameSite: 'none',
         path: '/',
         secure: true,
-        domain: '.embedding-playbook-navy.vercel.app',
+        domain: '.embedding-playbook-git-runfromroot-russ-goldins-projects.vercel.app',
       }
     },
     csrfToken: {
